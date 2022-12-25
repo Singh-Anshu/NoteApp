@@ -13,6 +13,9 @@ import androidx.room.RoomDatabase;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
@@ -21,6 +24,7 @@ import com.example.noteapp.Adapter.NotesListAdapter;
 import com.example.noteapp.Database.RoomDBHelper;
 import com.example.noteapp.Model.Notes;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 
@@ -33,7 +37,6 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
     FloatingActionButton fab_add;
     SearchView searchview_home;
     Notes selectedNotes;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,7 +54,7 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
         fab_add.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, NotesTakerActivity.class);
+               Intent intent = new Intent(MainActivity.this, NotesTakerActivity.class);
                 startActivityForResult(intent,101);
             }
         });
@@ -94,7 +97,8 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
                 roomDatabase.mainDAO().insert(new_notes);
                 notesArrayList.clear();
                 notesArrayList.addAll(roomDatabase.mainDAO().getAll());
-                notesListAdapter.notifyDataSetChanged();
+             //   notesListAdapter.notifyDataSetChanged();
+                notesListAdapter.notifyData();
             }
         }
         else if(requestCode == 102){
@@ -103,7 +107,8 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
                 roomDatabase.mainDAO().update(new_notes.getId(),new_notes.getTitle(),new_notes.getNotes());
                 notesArrayList.clear();
                 notesArrayList.addAll(roomDatabase.mainDAO().getAll());
-                notesListAdapter.notifyDataSetChanged();
+              //  notesListAdapter.notifyDataSetChanged();
+                notesListAdapter.notifyData();
             }
         }
     }
@@ -156,18 +161,73 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
 
             notesArrayList.clear();
             notesArrayList.addAll(roomDatabase.mainDAO().getAll());
-            notesListAdapter.notifyDataSetChanged();
+           // notesListAdapter.notifyDataSetChanged();
+                notesListAdapter.notifyData();
             return  true;
 
             case R.id.delete:
-                roomDatabase.mainDAO().delete(selectedNotes);
+
+                //roomDatabase.mainDAO().delete(selectedNotes);
                 notesArrayList.remove(selectedNotes);
-                notesListAdapter.notifyDataSetChanged();
-                Toast.makeText(this, "Note Deleted!", Toast.LENGTH_SHORT).show();
+               // notesListAdapter.notifyDataSetChanged();
+                notesListAdapter.notifyData();
+               // Toast.makeText(this, "Note Deleted!", Toast.LENGTH_SHORT).show();
+                View view = getWindow().getDecorView().findViewById(R.id.delete);
+                showSnackBar(findViewById(R.id.delete));
                 return  true;
 
             default:
                 return false;
+        }
+
+    }
+
+    private void showSnackBar(View view){
+
+
+        try {
+            Snackbar.make(recyclerView,"Note move to Bin",10000)
+                    .setAction("Undo", new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                    Log.e("Step1","Undo Clicked");
+                  // Toast.makeText(MainActivity.this, "Undo Clicked", Toast.LENGTH_SHORT).show();
+                    notesArrayList.clear();
+                    notesArrayList.addAll(roomDatabase.mainDAO().getAll());
+                    notesListAdapter.notifyData();
+                }
+            })
+                    .addCallback(new Snackbar.Callback(){
+                        @Override
+                        public void onDismissed(Snackbar transientBottomBar, int event) {
+                            super.onDismissed(transientBottomBar, event);
+                            if (event == DISMISS_EVENT_TIMEOUT || event == DISMISS_EVENT_SWIPE
+                                    || event == DISMISS_EVENT_CONSECUTIVE || event == DISMISS_EVENT_MANUAL) {
+                                Log.e("Step2","Note Deleted");
+                                roomDatabase.mainDAO().delete(selectedNotes);
+                            }
+                        }
+                    })
+                    .show();
+
+
+           /* Snackbar snackbar = Snackbar.make(recyclerView,"",3000);
+            Snackbar.SnackbarLayout snackbarLayout = (Snackbar.SnackbarLayout) snackbar.getView();
+            View view1 = LayoutInflater.from(this).inflate(R.layout.snackbar_layout, null);
+            view1.findViewById(R.id.undo_btn).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Toast.makeText(MainActivity.this, "Undo Clicked", Toast.LENGTH_SHORT).show();
+                }
+            });
+            snackbarLayout.setPadding(0,0,0,0);
+            snackbarLayout.addView(view1);
+            snackbar.show();*/
+
+        }catch (Exception ex){
+            ex.printStackTrace();
+            Log.e("showSnackBar",ex.toString());
         }
 
     }

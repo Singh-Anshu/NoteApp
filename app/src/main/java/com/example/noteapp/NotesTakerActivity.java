@@ -46,8 +46,8 @@ public class NotesTakerActivity extends AppCompatActivity {
         img_save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String title = et_title.getText().toString();
-                String description = et_notes.getText().toString();
+                String title = et_title.getText().toString().trim();
+                String description = et_notes.getText().toString().trim();
 
                 if(description.isEmpty()){
                     Toast.makeText(NotesTakerActivity.this, "Please Add Some Notes", Toast.LENGTH_SHORT).show();

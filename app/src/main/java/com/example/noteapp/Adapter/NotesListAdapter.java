@@ -85,7 +85,7 @@ public class NotesListAdapter extends RecyclerView.Adapter<NotesViewHolder> {
         }catch (Exception ex){
             ex.printStackTrace();
             Log.e("onBindViewHolder", ex.toString());
-        }
+         }
 
     }
 
@@ -111,6 +111,10 @@ public class NotesListAdapter extends RecyclerView.Adapter<NotesViewHolder> {
 
     public void filterList(ArrayList<Notes> filterList){
         notesArrayList = filterList;
+        notifyDataSetChanged();
+    }
+
+    public void notifyData(){
         notifyDataSetChanged();
     }
 }

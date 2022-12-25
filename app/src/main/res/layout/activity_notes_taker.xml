@@ -15,14 +15,15 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
+
             <ImageView
                 android:id="@+id/imageview_save"
+                android:layout_width="?attr/actionBarSize"
+                android:layout_height="?attr/actionBarSize"
+                android:layout_alignParentEnd="true"
                 android:background="@android:color/transparent"
                 android:padding="@dimen/_8sdp"
-                android:layout_alignParentEnd="true"
-                android:src="@drawable/ic_save"
-                android:layout_width="?attr/actionBarSize"
-                android:layout_height="?attr/actionBarSize"/>
+                android:src="@drawable/ic_save" />
 
         </RelativeLayout>
 
